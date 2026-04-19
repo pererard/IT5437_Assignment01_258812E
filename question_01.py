@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-img = cv2.imread('runway.png')
+img = cv2.imread(r'D:\MScAI_UOM\S3\CV\Assignment 01\data\runway.png')
 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # grayscale
 img_norm = img / 255.0  # normalize to [0,1]
 
