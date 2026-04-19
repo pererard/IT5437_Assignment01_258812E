@@ -21,3 +21,26 @@ print("Raw kernel: ", kernel)
 # normzalize the kernel
 kernel = kernel / np.sum(kernel)
 print("Normalized kernel: ", kernel)
+
+
+# 51x51 kernel
+size = 51
+sigma = 10  # random value
+
+ax = np.arange(-(size // 2), size // 2 + 1)
+xx, yy = np.meshgrid(ax, ax)
+
+kernel = np.exp(-(xx**2 + yy**2) / (2 * sigma**2))
+kernel /= np.sum(kernel)
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection="3d")
+
+ax.plot_surface(xx, yy, kernel)
+
+ax.set_xlabel("X")
+ax.set_ylabel("Y")
+ax.set_zlabel("Kernel Value")
+
+plt.show()
+
