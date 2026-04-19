@@ -97,3 +97,34 @@ plt.imshow(gradient_magnitude, cmap="gray")
 plt.axis("off")
 
 plt.show()
+
+
+# compute horizontal and vertical gradients using Sobel
+Ix_sobel = cv.Sobel(im, cv.CV_64F, 1, 0, ksize=5)  # dx=1, dy=0
+Iy_sobel = cv.Sobel(im, cv.CV_64F, 0, 1, ksize=5)  # dx=0, dy=1
+
+# Gradient magnitude
+gradient_sobel = np.sqrt(Ix_sobel**2 + Iy_sobel**2)
+gradient_sobel = (gradient_sobel / np.max(gradient_sobel) * 255).astype(np.uint8)
+
+plt.figure(figsize=(15, 5))
+
+#  DoG gradients
+plt.subplot(1, 3, 1)
+plt.title("Gradient Magnitude (DoG)")
+plt.imshow(gradient_magnitude, cmap="gray")
+plt.axis("off")
+
+# Sobel gradients
+plt.subplot(1, 3, 2)
+plt.title("Gradient Magnitude (Sobel)")
+plt.imshow(gradient_sobel, cmap="gray")
+plt.axis("off")
+
+# Difference
+plt.subplot(1, 3, 3)
+plt.title("Difference (DoG - Sobel)")
+plt.imshow(np.abs(gradient_magnitude - gradient_sobel), cmap="hot")
+plt.axis("off")
+
+plt.show()
