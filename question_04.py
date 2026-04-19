@@ -34,3 +34,72 @@ axes[2].axis("off")
 
 plt.tight_layout()
 plt.show()
+
+# create boolean foreground mask with boolean values
+# since the binary mask has 255 for background and 0 for foreground
+# we need it as boolean mask with True for 0 and False for 255
+foreground_mask = binary_mask == 0
+
+# extract foreground pixels
+foreground_pixels = gray[foreground_mask]
+
+# compute histogram for foreground
+hist = np.zeros(256, dtype=int)
+for i in range(256):
+    hist[i] = np.sum(foreground_pixels == i)
+
+cdf = hist.cumsum()  # cumulative distribution function
+
+# normalize
+cdf_min = cdf[np.nonzero(cdf)][0]  # first non-zero
+total_pixels = foreground_pixels.size  # get only foreground pixels count
+cdf_normalized = np.round((cdf - cdf_min) / (total_pixels - cdf_min) * 255).astype(
+    np.uint8
+)
+
+# map original pixel values to equalized values
+result = gray.copy()
+result[foreground_mask] = cdf_normalized[gray[foreground_mask]]
+
+# compute histograms for before/after comparison
+hist_before = np.zeros(256, dtype=int)
+hist_after = np.zeros(256, dtype=int)
+for i in range(256):
+    hist_before[i] = np.sum(foreground_pixels == i)
+    hist_after[i] = np.sum(result[foreground_mask] == i)
+
+fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+
+axes[0, 0].imshow(gray, cmap="gray")
+axes[0, 0].set_title("Original Grayscale")
+axes[0, 0].axis("off")
+
+axes[0, 1].plot(hist_before, color="black")
+axes[0, 1].set_title("Foreground Histogram Before Equalization")
+axes[0, 1].set_xlabel("Pixel Intensity")
+axes[0, 1].set_ylabel("Pixel Count")
+axes[0, 1].set_xlim([0, 255])
+
+axes[1, 0].imshow(result, cmap="gray")
+axes[1, 0].set_title("Foreground Equalized Image")
+axes[1, 0].axis("off")
+
+axes[1, 1].plot(hist_after, color="black")
+axes[1, 1].set_title("Foreground Histogram After Equalization")
+axes[1, 1].set_xlabel("Pixel Intensity")
+axes[1, 1].set_ylabel("Pixel Count")
+axes[1, 1].set_xlim([0, 255])
+
+plt.suptitle("Foreground Histogram Equalization", fontsize=14)
+plt.tight_layout()
+plt.show()
+
+fig2, axes2 = plt.subplots(1, 2, figsize=(18, 10))
+axes2[0].imshow(gray, cmap='gray')
+axes2[0].set_title("Original Grayscale", fontsize=14)
+axes2[0].axis('off')
+axes2[1].imshow(result, cmap='gray')
+axes2[1].set_title("Foreground Equalized", fontsize=14)
+axes2[1].axis('off')
+plt.tight_layout()
+plt.show()
