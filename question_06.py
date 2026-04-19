@@ -45,3 +45,55 @@ ax3d.set_zlabel("Kernel Value")
 ax3d.set_title("Derivative-of-Gaussian Kernel (X-direction)")
 
 plt.show()
+
+im = cv.imread("D:\MScAI_UOM\S3\CV\Assignment 01\data\emma.jpg", cv.IMREAD_GRAYSCALE)
+
+# image height and width
+height, width = im.shape
+
+size = 51
+pad = size // 2
+
+# Pad image to handle edges
+padded = np.pad(im, pad, mode="reflect")  # reflect is better than zero padding
+
+# Initialize outputs
+Ix = np.zeros_like(im, dtype=float)
+Iy = np.zeros_like(im, dtype=float)
+
+# Manual convolution
+for i in range(height):
+    for j in range(width):
+        region = padded[i : i + size, j : j + size]
+        Ix[i, j] = np.sum(region * kernel_x)
+        Iy[i, j] = np.sum(region * kernel_y)
+
+gradient_magnitude = np.sqrt(Ix**2 + Iy**2)
+
+# Normalize for display
+gradient_magnitude = (gradient_magnitude / np.max(gradient_magnitude) * 255).astype(
+    np.uint8
+)
+
+
+plt.figure(figsize=(15, 5))
+
+# Horizontal gradient
+plt.subplot(1, 3, 1)
+plt.title("Horizontal Gradient (Ix - kernel_x)")
+plt.imshow(Ix, cmap="gray")
+plt.axis("off")
+
+# Vertical gradient
+plt.subplot(1, 3, 2)
+plt.title("Vertical Gradient (Iy - kernel_y)")
+plt.imshow(Iy, cmap="gray")
+plt.axis("off")
+
+# Gradient magnitude
+plt.subplot(1, 3, 3)
+plt.title("Gradient Magnitude")
+plt.imshow(gradient_magnitude, cmap="gray")
+plt.axis("off")
+
+plt.show()
